@@ -109,10 +109,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\VulkanSDK\Include; D:\VulkanSDK\GLM\glm; D:\VulkanSDK\GLFW\glfw-3.4\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\VulkanSDK\GLFW\glfw-3.4\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies) vulkan-1.lib;  glfw3.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,7 +157,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="StoneOcean.cpp" />
+    <ClCompile Include="app.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="StoneOcean_window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="app.hpp" />
+    <ClInclude Include="StoneOcean_window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
