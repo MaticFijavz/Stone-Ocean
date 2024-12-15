@@ -148,22 +148,31 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>D:\VulkanSDK\VulkanSDK\Include; D:\VulkanSDK\GLFW\glfw-3.4\include; D:\VulkanSDK\GLM</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\VulkanSDK\GLFW\glfw-3.4\lib-vc2022; D:\VulkanSDK\VulkanSDK\Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StoneOcean_pipeline.cpp" />
     <ClCompile Include="StoneOcean_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.hpp" />
+    <ClInclude Include="StoneOcean_pipeline.hpp" />
     <ClInclude Include="StoneOcean_window.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="shaders\compile.bat" />
+    <Content Include="shaders\frag_shader.frag" />
+    <Content Include="shaders\vert_shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
