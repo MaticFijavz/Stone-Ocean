@@ -16,6 +16,8 @@ namespace  StoneOcean{
         StoneOceanWindow &operator=(const StoneOceanWindow &) = delete;
           
         bool ShouldClose() {return glfwWindowShouldClose(window);}
+        
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface); 
 
      
     private:
