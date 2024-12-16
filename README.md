@@ -18,9 +18,8 @@ The current roadmap as of editing:\
 [x] windowing\
 [x] Make a graphics pipeline\
 [x] Compile SPIR-V code\
-[ ] Device setup
-[ ] fixed function pipeline stages
-[ ] Swap chain setup
-[ ] command buffers
-
-
+[x] Device setup\
+[x] comamnd pool\
+[ ] fixed function pipeline stages\
+[ ] Swap chain setup\
+[ ] command buffers\
