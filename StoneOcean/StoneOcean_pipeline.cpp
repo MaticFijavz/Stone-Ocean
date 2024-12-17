@@ -5,13 +5,20 @@
 #include <fstream>
 #include <iostream>
 
-namespace StoneOcean{
-    
-    StoneOceanPipeline::StoneOceanPipeline(const std::string& vertFilepath, const std::string& fragFilepath){
-        createGraphicsPipeline(vertFilepath, fragFilepath);
+namespace StoneOcean
+{
+    StoneOceanPipeline::StoneOceanPipeline(
+     StoneOceanDevice &device,
+     const std::string& vertFilepath, 
+     const std::string& fragFilepath, 
+     const pipelineConfigInfo& configInfo) :  SOdevice{device} {
+        createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
     }
     
-    void StoneOceanPipeline::createGraphicsPipeline(const std::string& vertFilepath, const std::string& fragFilepath){
+    void StoneOceanPipeline::createGraphicsPipeline(
+    const std::string& vertFilepath, 
+    const std::string& fragFilepath, 
+    const pipelineConfigInfo& configInfo){
     
         auto vertCode = readFile(vertFilepath);
         auto fragCode = readFile(fragFilepath);
@@ -24,21 +31,35 @@ namespace StoneOcean{
     
     std::vector<char> StoneOceanPipeline::readFile(const std::string& filepath){
     
-    std::ifstream file{filepath, std::ios::ate | std::ios::binary};    
+        std::ifstream file{filepath, std::ios::ate | std::ios::binary};    
     
-    if (!file.is_open()){
-    throw std::runtime_error("cannot open file: "+filepath);
+        if (!file.is_open()){
+            throw std::runtime_error("cannot open file: "+filepath);
+        }
+    
+        size_t fileSize = static_cast<size_t>(file.tellg());
+        std::vector<char>buffer(fileSize);
+    
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+    
+        file.close();
+        return buffer;
     }
-    
-    size_t fileSize = static_cast<size_t>(file.tellg());
-    std::vector<char>buffer(fileSize);
-    
-    file.seekg(0);
-    file.read(buffer.data(), fileSize);
-    
-    file.close();
-    return buffer;
+    void StoneOceanPipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+    {
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if (vkCreateShaderModule(SOdevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create shader module!");
+        }
+    }
+    pipelineConfigInfo StoneOceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height){
+    pipelineConfigInfo configInfo{};
+    return configInfo;
     }
 
-    
 }

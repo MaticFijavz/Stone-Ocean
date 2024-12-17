@@ -2,6 +2,7 @@
 
 #include "StoneOcean_window.hpp"
 #include "StoneOcean_pipeline.hpp"
+#include "StoneOcean_device.hpp"
 
 namespace StoneOcean{
     class App{
@@ -14,7 +15,12 @@ namespace StoneOcean{
         
     private:
         StoneOceanWindow StoneOceanWindow{WIDTH, HEIGHT, "Stone Ocean"};
-        StoneOceanPipeline StoneOceanPipeLine{"shaders/vert_shader.vert.spv", "shaders/frag_shader.frag.spv"};
+        StoneOceanDevice StoneOceanDevice{StoneOceanWindow};
+        StoneOceanPipeline StoneOceanPipeLine{
+        StoneOceanDevice,
+        "shaders/vert_shader.vert.spv", 
+        "shaders/frag_shader.frag.spv",
+         StoneOceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
         
     };
 

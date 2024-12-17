@@ -6,7 +6,7 @@
 #include <set>
 #include <unordered_set>
 
-namespace lve {
+namespace StoneOcean {
 
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -297,7 +297,7 @@ void StoneOceanDevice::hasGflwRequiredInstanceExtensions() {
   }
 }
 
-bool StoneOceanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool StoneOcean::StoneOceanDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   uint32_t extensionCount;
   vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 

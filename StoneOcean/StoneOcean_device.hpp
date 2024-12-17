@@ -1,11 +1,12 @@
 #pragma once
 
 #include "StoneOcean_window.hpp"
+#include "vulkan/vulkan.h"
 
 // std lib headers
 #include <vector>
 
-namespace lve {
+namespace StoneOcean {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;
