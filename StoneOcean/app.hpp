@@ -14,7 +14,7 @@ namespace StoneOcean{
         
     private:
         StoneOceanWindow StoneOceanWindow{WIDTH, HEIGHT, "Stone Ocean"};
-        StoneOceanPipeline StoneOceanPipeLine{"shaders/vert_shader.frag.spv", "shaders/frag_shader.frag.spv"};
+        StoneOceanPipeline StoneOceanPipeLine{"shaders/vert_shader.vert.spv", "shaders/frag_shader.frag.spv"};
         
     };
 
