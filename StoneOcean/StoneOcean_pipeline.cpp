@@ -26,6 +26,7 @@ namespace StoneOcean
     const std::string& fragFilepath, 
     const pipelineConfigInfo& configInfo)
     {
+    
         assert(configInfo.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline:: no pipelineLayout provided");
         assert(configInfo.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline:: no pipelineLayout provided");
         auto vertCode = readFile(vertFilepath);
@@ -57,13 +58,20 @@ namespace StoneOcean
         vertexInputInfo.pVertexBindingDescriptions = nullptr;
         vertexInputInfo.pVertexAttributeDescriptions = nullptr;
         
+        VkPipelineViewportStateCreateInfo viewportInfo{};
+        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportInfo.viewportCount = 1;
+        viewportInfo.pViewports = &configInfo.viewport;
+        viewportInfo.scissorCount = 1;
+        viewportInfo.pScissors = &configInfo.scissor;
+        
         VkGraphicsPipelineCreateInfo pieplineInfo{};
         pieplineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pieplineInfo.stageCount = 2;
         pieplineInfo.pStages = shaderStages;
         pieplineInfo.pVertexInputState = &vertexInputInfo;
         pieplineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-        pieplineInfo.pViewportState = &configInfo.viewportInfo;
+        pieplineInfo.pViewportState = &viewportInfo;
         pieplineInfo.pRasterizationState = &configInfo.rasterizationInfo;
         pieplineInfo.pMultisampleState = &configInfo.multisampleInfo;
         pieplineInfo.pColorBlendState = &configInfo.colorBlendInfo;
@@ -127,12 +135,6 @@ namespace StoneOcean
         
         configInfo.scissor.offset = {0, 0};
         configInfo.scissor.extent = {width, height};
-        
-        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.viewportInfo.viewportCount = 1;
-        configInfo.viewportInfo.pViewports = &configInfo.viewport;
-        configInfo.viewportInfo.scissorCount = 1;
-        configInfo.viewportInfo.pScissors = &configInfo.scissor;
         
             
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;

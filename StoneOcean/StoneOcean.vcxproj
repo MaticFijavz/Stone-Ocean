@@ -172,12 +172,14 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StoneOcean_swap_chain.cpp" />
     <ClCompile Include="StoneOcean_device.cpp" />
     <ClCompile Include="StoneOcean_pipeline.cpp" />
     <ClCompile Include="StoneOcean_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.hpp" />
+    <ClInclude Include="StoneOcean_swap_chain.hpp" />
     <ClInclude Include="StoneOcean_device.hpp" />
     <ClInclude Include="StoneOcean_pipeline.hpp" />
     <ClInclude Include="StoneOcean_window.hpp" />
@@ -185,7 +187,9 @@
   <ItemGroup>
     <Content Include="shaders\compile.bat" />
     <Content Include="shaders\frag_shader.frag" />
+    <Content Include="shaders\frag_shader.frag.spv" />
     <Content Include="shaders\vert_shader.vert" />
+    <Content Include="shaders\vert_shader.vert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
