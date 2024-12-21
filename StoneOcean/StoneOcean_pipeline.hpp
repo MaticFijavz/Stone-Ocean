@@ -8,7 +8,20 @@
 
 namespace StoneOcean{
 
-    struct pipelineConfigInfo{};
+    struct pipelineConfigInfo{
+        VkViewport viewport;
+        VkRect2D scissor;
+        VkPipelineViewportStateCreateInfo viewportInfo;
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+        VkPipelineMultisampleStateCreateInfo multisampleInfo;
+        VkPipelineColorBlendAttachmentState colorBlendAttachment;
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+        VkPipelineLayout pipelineLayout = nullptr;
+        VkRenderPass renderPass = nullptr;
+        uint32_t subpass = 0;
+    };
     
     class StoneOceanPipeline{
     public:
@@ -17,7 +30,7 @@ namespace StoneOcean{
      const std::string& vertFilepath, 
      const std::string& fragFilepath, 
      const pipelineConfigInfo& configInfo);
-     ~StoneOceanPipeline() {}
+     ~StoneOceanPipeline();
      
      StoneOceanPipeline(const StoneOceanPipeline&) = delete;
         void operator=(const StoneOceanPipeline&) = delete;
@@ -31,7 +44,7 @@ namespace StoneOcean{
         const std::string& fragFilepath,      
         const pipelineConfigInfo& configInfo);
         
-        void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
+        void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) const;
         
         StoneOcean::StoneOceanDevice& SOdevice;
         VkPipeline graphicsPipeline;
