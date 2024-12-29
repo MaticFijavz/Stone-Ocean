@@ -35,6 +35,8 @@ namespace StoneOcean{
      StoneOceanPipeline(const StoneOceanPipeline&) = delete;
         void operator=(const StoneOceanPipeline&) = delete;
         
+        void bind(VkCommandBuffer commandBuffer);
+        
     static pipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
     
     private: 

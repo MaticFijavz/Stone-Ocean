@@ -119,6 +119,12 @@ namespace StoneOcean
             throw std::runtime_error("failed to create shader module!");
         }
     }
+    
+        void StoneOceanPipeline::bind(VkCommandBuffer commandBuffer){
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+        }
+
+        
         pipelineConfigInfo StoneOceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height){
         pipelineConfigInfo configInfo{};
         
