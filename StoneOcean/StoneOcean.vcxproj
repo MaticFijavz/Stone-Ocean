@@ -172,6 +172,7 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StoneOcean_model.cpp" />
     <ClCompile Include="StoneOcean_swap_chain.cpp" />
     <ClCompile Include="StoneOcean_device.cpp" />
     <ClCompile Include="StoneOcean_pipeline.cpp" />
@@ -179,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.hpp" />
+    <ClInclude Include="StoneOcean_model.hpp" />
     <ClInclude Include="StoneOcean_swap_chain.hpp" />
     <ClInclude Include="StoneOcean_device.hpp" />
     <ClInclude Include="StoneOcean_pipeline.hpp" />

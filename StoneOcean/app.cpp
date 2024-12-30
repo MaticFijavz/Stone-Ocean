@@ -7,6 +7,7 @@
 namespace StoneOcean{
     
     App::App(){
+        loadModels();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -24,6 +25,17 @@ namespace StoneOcean{
             
         vkDeviceWaitIdle(StoneOceanDevice.device());
     }
+    
+    void App::loadModels(){
+        std::vector<StoneOceanmodel::Vertex> vertices{
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+        StoneOceanmodel= std::make_unique<class StoneOceanmodel>(StoneOceanDevice, vertices);
+    }
+
+    
     void StoneOcean::App::createPipelineLayout(){
         VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
         pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -85,7 +97,8 @@ namespace StoneOcean{
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             
             StoneOceanPipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            StoneOceanmodel->Bind(commandBuffers[i]);
+            StoneOceanmodel->Draw(commandBuffers[i]);
             
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS){

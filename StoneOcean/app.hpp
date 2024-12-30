@@ -4,6 +4,7 @@
 #include "StoneOcean_pipeline.hpp"
 #include "StoneOcean_device.hpp"
 #include "StoneOcean_swap_chain.hpp"
+#include "StoneOcean_model.hpp"
 
 //std
 #include <memory>
@@ -24,6 +25,7 @@ namespace StoneOcean{
         void run();
         
     private:
+        void loadModels(); 
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
@@ -36,6 +38,7 @@ namespace StoneOcean{
         std::unique_ptr<StoneOceanPipeline> StoneOceanPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::unique_ptr<StoneOceanmodel> StoneOceanmodel;
         
     };
 
