@@ -1,5 +1,6 @@
 ﻿#include "StoneOcean_pipeline.hpp"
 #include "StoneOcean_model.hpp"
+#include "StoneOcean_swap_chain.hpp"
 
 
 //std
@@ -7,8 +8,14 @@
 #include <iostream>
 #include <cassert>
 
+VkExtent2D Smudge::StoneOceanSwapChain::extent;
+std::array<VkAttachmentDescription, 2> Smudge::StoneOceanSwapChain::attachments;
+
 namespace StoneOcean
 {
+    VkPipelineViewportStateCreateInfo  viewportInfo{};
+    VkRect2D scissor{};
+    VkViewport viewport{};
     StoneOceanPipeline::StoneOceanPipeline(
      StoneOceanDevice &device,
      const std::string& vertFilepath, 
@@ -22,12 +29,13 @@ namespace StoneOcean
         vkDestroyPipeline(SOdevice.device(), graphicsPipeline, nullptr);
     }
     
+    
     void StoneOceanPipeline::createGraphicsPipeline(
     const std::string& vertFilepath, 
     const std::string& fragFilepath, 
-    const pipelineConfigInfo& configInfo)
+    const pipelineConfigInfo& configInfo
+    )
     {
-    
         assert(configInfo.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline:: no pipelineLayout provided");
         assert(configInfo.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline:: no pipelineLayout provided");
         auto vertCode = readFile(vertFilepath);
@@ -61,25 +69,84 @@ namespace StoneOcean
         vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         
-        VkPipelineViewportStateCreateInfo viewportInfo{};
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
+        dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+        dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+        dynamicStateInfo.flags = 0;
+        
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(Smudge::StoneOceanSwapChain::extent.width);
+        viewport.height = static_cast<float>(Smudge::StoneOceanSwapChain::extent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        scissor.offset = {0, 0};
+        scissor.extent = Smudge::StoneOceanSwapChain::extent;
+  
         viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = &configInfo.viewport;
+        viewportInfo.pViewports = &viewport; 
         viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &configInfo.scissor;
+        viewportInfo.pScissors = &scissor; 
+        
+        VkPipelineRasterizationStateCreateInfo rastainfo = configInfo.rasterizationInfo;
+        rastainfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rastainfo.lineWidth = 1.0f;
+        
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = configInfo.inputAssemblyInfo;
+        inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; // Use point list topology
+        inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
+        
+        std::vector<VkDynamicState> dynamic_states = configInfo.dynamicStateEnables;
+                
+        VkPipelineMultisampleStateCreateInfo multisampleInfo = configInfo.multisampleInfo;
+        multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo = configInfo.depthStencilInfo;
+        depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        
+        // Define color blend attachment state
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        colorBlendAttachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.blendEnable = VK_FALSE; // Disable blending
+        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+        // Set up color blend state
+        VkPipelineColorBlendStateCreateInfo colorBlending{};
+        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = VK_LOGIC_OP_COPY;
+        colorBlending.attachmentCount = 1;
+        colorBlending.pAttachments = &colorBlendAttachment;
+        colorBlending.blendConstants[0] = 0.0f;
+        colorBlending.blendConstants[1] = 0.0f;
+        colorBlending.blendConstants[2] = 0.0f;
+        colorBlending.blendConstants[3] = 0.0f;
+        
         
         VkGraphicsPipelineCreateInfo pieplineInfo{};
         pieplineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pieplineInfo.stageCount = 2;
         pieplineInfo.pStages = shaderStages;
         pieplineInfo.pVertexInputState = &vertexInputInfo;
-        pieplineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
+        pieplineInfo.pInputAssemblyState = &inputAssemblyInfo;
         pieplineInfo.pViewportState = &viewportInfo;
-        pieplineInfo.pRasterizationState = &configInfo.rasterizationInfo;
-        pieplineInfo.pMultisampleState = &configInfo.multisampleInfo;
-        pieplineInfo.pColorBlendState = &configInfo.colorBlendInfo;
-        pieplineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
-        pieplineInfo.pDynamicState = nullptr;
+        pieplineInfo.pRasterizationState = &rastainfo;
+        pieplineInfo.pMultisampleState = &multisampleInfo;
+        pieplineInfo.pColorBlendState = &colorBlending;
+        pieplineInfo.pDepthStencilState = &depthStencilInfo;
+        pieplineInfo.pDynamicState = &dynamicStateInfo;
+         
         
         pieplineInfo.layout = configInfo.pipelineLayout;
         pieplineInfo.renderPass = configInfo.renderPass;
@@ -128,28 +195,18 @@ namespace StoneOcean
         }
 
         
-        pipelineConfigInfo StoneOceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height){
-        pipelineConfigInfo configInfo{};
-        
+        void defaultPipelineConfigInfo(pipelineConfigInfo& configInfo){
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo = configInfo.colorBlendInfo;
+        colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
         configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO; 
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
         
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
-        
-        configInfo.scissor.offset = {0, 0};
-        configInfo.scissor.extent = {width, height};
-        
-            
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;
         configInfo.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_LINE;
+        configInfo.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
         configInfo.rasterizationInfo.lineWidth = 1.0f;
         configInfo.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
         configInfo.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
@@ -181,7 +238,8 @@ namespace StoneOcean
         configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
         configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
         configInfo.colorBlendInfo.attachmentCount = 1;
-        configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
+        configInfo.colorBlendInfo.pAttachments = colorBlendInfo.pAttachments;
+        configInfo.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
         configInfo.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
         configInfo.colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
         configInfo.colorBlendInfo.blendConstants[2] = 0.0f;  // Optional
@@ -197,8 +255,13 @@ namespace StoneOcean
         configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
         configInfo.depthStencilInfo.front = {};  // Optional
         configInfo.depthStencilInfo.back = {};   // Optional
-    
-    return configInfo;
+        
+        configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+        configInfo.dynamicStateInfo.dynamicStateCount =
+            static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+        configInfo.dynamicStateInfo.flags = 0;
     }
 
 }

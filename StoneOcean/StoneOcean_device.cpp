@@ -14,7 +14,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
     void *pUserData) {
-  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
+  std::cerr << "validation layer: " << pCallbackData->pMessage << '\n';
 
   return VK_FALSE;
 }
@@ -114,7 +114,7 @@ void StoneOceanDevice::pickPhysicalDevice() {
   if (deviceCount == 0) {
     throw std::runtime_error("failed to find GPUs with Vulkan support!");
   }
-  std::cout << "Device count: " << deviceCount << std::endl;
+  std::cout << "Device count: " << deviceCount << '\n';
   std::vector<VkPhysicalDevice> devices(deviceCount);
   vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
@@ -130,7 +130,7 @@ void StoneOceanDevice::pickPhysicalDevice() {
   }
 
   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-  std::cout << "physical device: " << properties.deviceName << std::endl;
+  std::cout << "physical device: " << properties.deviceName << '\n';
 }
 
 void StoneOceanDevice::createLogicalDevice() {
@@ -280,17 +280,17 @@ void StoneOceanDevice::hasGflwRequiredInstanceExtensions() {
   std::vector<VkExtensionProperties> extensions(extensionCount);
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-  std::cout << "available extensions:" << std::endl;
+  std::cout << "available extensions:" << '\n';
   std::unordered_set<std::string> available;
   for (const auto &extension : extensions) {
-    std::cout << "\t" << extension.extensionName << std::endl;
+    std::cout << "\t" << extension.extensionName << '\n';
     available.insert(extension.extensionName);
   }
 
-  std::cout << "required extensions:" << std::endl;
+  std::cout << "required extensions:" << '\n';
   auto requiredExtensions = getRequiredExtensions();
   for (const auto &required : requiredExtensions) {
-    std::cout << "\t" << required << std::endl;
+    std::cout << "\t" << required << '\n';
     if (available.find(required) == available.end()) {
       throw std::runtime_error("Missing required glfw extension");
     }

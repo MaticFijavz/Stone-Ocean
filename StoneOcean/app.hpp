@@ -14,8 +14,8 @@
 namespace StoneOcean{
     class App{
     public:
-        static constexpr uint32_t WIDTH {800};
-        static constexpr uint32_t HEIGHT {600};
+        static constexpr uint32_t WIDTH {1200};
+        static constexpr uint32_t HEIGHT {900};
             
         App();    
         ~App();    
@@ -28,13 +28,16 @@ namespace StoneOcean{
         void loadModels(); 
         void createPipelineLayout();
         void createPipeline();
+        void recordCommandBuffer(int imageIndex);
         void createCommandBuffers();
+        void freeCommandBuffers();
         void drawFrame();
+        void recreateSwapChain();
         
     
         StoneOceanWindow StoneOceanWindow{WIDTH, HEIGHT, "Stone Ocean"};
         StoneOceanDevice StoneOceanDevice{StoneOceanWindow};
-        Smudge::StoneOceanSwapChain  StoneOceanSwapChain{StoneOceanDevice, StoneOceanWindow.getExtent()}; 
+        std::unique_ptr<Smudge::StoneOceanSwapChain>StoneOceanSwapChain; 
         std::unique_ptr<StoneOceanPipeline> StoneOceanPipeline;
         VkPipelineLayout pipelineLayout;
         std::vector<VkCommandBuffer> commandBuffers;

@@ -36,7 +36,7 @@ class StoneOceanDevice {
 
   // Not copyable or movable
   StoneOceanDevice(const StoneOceanDevice &) = delete;
-  void operator=(const StoneOceanDevice &) = delete;
+  StoneOceanDevice &operator=(const StoneOceanDevice &) = delete;
   StoneOceanDevice(StoneOceanDevice &&) = delete;
   StoneOceanDevice &operator=(StoneOceanDevice &&) = delete;
 

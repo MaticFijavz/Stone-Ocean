@@ -6,22 +6,29 @@
 #include <vulkan/vulkan.h>
 
 // std lib headers
+#include <memory>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "StoneOcean_device.hpp"
 
 namespace Smudge {
+    
 
-class StoneOceanSwapChain {
+ class StoneOceanSwapChain {
  public:
+     VkExtent2D static extent;
+     std::array<VkAttachmentDescription, 2> static attachments;
+
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
   StoneOceanSwapChain(StoneOcean::StoneOceanDevice &deviceRef, VkExtent2D windowExtent);
+  StoneOceanSwapChain(StoneOcean::StoneOceanDevice &deviceRef, VkExtent2D windowExtent, std::shared_ptr<StoneOceanSwapChain>previous);
   ~StoneOceanSwapChain();
 
   StoneOceanSwapChain(const StoneOceanSwapChain &) = delete;
-  void operator=(const StoneOceanSwapChain &) = delete;
+  StoneOceanSwapChain &operator=(const StoneOceanSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }
@@ -41,6 +48,7 @@ class StoneOceanSwapChain {
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
  private:
+  void init();
   void createSwapChain();
   void createImageViews();
   void createDepthResources();
@@ -71,6 +79,7 @@ class StoneOceanSwapChain {
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;
+  std::shared_ptr<StoneOceanSwapChain> oldSwapChain;
 
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;

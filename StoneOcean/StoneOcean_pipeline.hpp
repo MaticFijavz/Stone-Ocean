@@ -9,8 +9,8 @@
 namespace StoneOcean{
 
     struct pipelineConfigInfo{
-        VkViewport viewport;
-        VkRect2D scissor;
+        pipelineConfigInfo(const pipelineConfigInfo&) = delete;
+        pipelineConfigInfo& operator=(const pipelineConfigInfo&) = delete;
         
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -18,6 +18,8 @@ namespace StoneOcean{
         VkPipelineColorBlendAttachmentState colorBlendAttachment;
         VkPipelineColorBlendStateCreateInfo colorBlendInfo;
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+        std::vector<VkDynamicState> dynamicStateEnables;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo;
         VkPipelineLayout pipelineLayout = nullptr;
         VkRenderPass renderPass = nullptr;
         uint32_t subpass = 0;
@@ -33,11 +35,11 @@ namespace StoneOcean{
      ~StoneOceanPipeline();
      
      StoneOceanPipeline(const StoneOceanPipeline&) = delete;
-        void operator=(const StoneOceanPipeline&) = delete;
+     StoneOceanPipeline& operator=(const StoneOceanPipeline&) = delete;
         
         void bind(VkCommandBuffer commandBuffer);
         
-    static pipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
+    static void defaultPipelineConfigInfo(pipelineConfigInfo& configInfo);
     
     private: 
         static std::vector<char> readFile(const std::string& filepath);

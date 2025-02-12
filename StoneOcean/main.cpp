@@ -3,6 +3,7 @@
 //std
 #include <iostream>
 #include <cstdlib>
+#include <cassert>
 #include <stdexcept>
 
 int main(){

@@ -10,17 +10,30 @@
 #include <stdexcept>
 
 #include "StoneOcean_device.hpp"
-
 namespace Smudge {
-  Smudge::StoneOceanSwapChain::StoneOceanSwapChain(StoneOcean::StoneOceanDevice &deviceRef, VkExtent2D extent)
+
+
+  StoneOceanSwapChain::StoneOceanSwapChain(StoneOcean::StoneOceanDevice &deviceRef, VkExtent2D extent)
     : device{deviceRef}, windowExtent{extent} {
-  createSwapChain();
-  createImageViews();
-  createRenderPass();
-  createDepthResources();
-  createFramebuffers();
-  createSyncObjects();
+  init();
 }
+  StoneOceanSwapChain::StoneOceanSwapChain(StoneOcean::StoneOceanDevice &deviceRef, VkExtent2D extent, std::shared_ptr<StoneOceanSwapChain> previous)
+    : device{deviceRef}, windowExtent{extent} {
+    init();
+    
+    //cleanup old swpachain since it blows
+    oldSwapChain = nullptr;
+  }
+
+  void StoneOceanSwapChain::init(){
+    createSwapChain();
+    createImageViews();
+    createRenderPass();
+    createDepthResources();
+    createFramebuffers();
+    createSyncObjects();
+  }
+
 
 StoneOceanSwapChain::~StoneOceanSwapChain() {
   for (auto imageView : swapChainImageViews) {
@@ -125,8 +138,10 @@ void StoneOceanSwapChain::createSwapChain() {
 
   VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
   VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-  VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-
+  
+  extent = chooseSwapExtent(swapChainSupport.capabilities);
+    
+    
   uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
   if (swapChainSupport.capabilities.maxImageCount > 0 &&
       imageCount > swapChainSupport.capabilities.maxImageCount) {
@@ -163,7 +178,7 @@ void StoneOceanSwapChain::createSwapChain() {
   createInfo.presentMode = presentMode;
   createInfo.clipped = VK_TRUE;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain ;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");
@@ -204,7 +219,7 @@ void StoneOceanSwapChain::createImageViews() {
 
 void StoneOceanSwapChain::createRenderPass() {
   VkAttachmentDescription depthAttachment{};
-  depthAttachment.format = findDepthFormat();
+  depthAttachment.format = findDepthFormat(); // Ensure this format supports depth-stencil usage
   depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
   depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
   depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -249,6 +264,7 @@ void StoneOceanSwapChain::createRenderPass() {
       VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
   std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+
   VkRenderPassCreateInfo renderPassInfo = {};
   renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
   renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -363,12 +379,11 @@ void StoneOceanSwapChain::createSyncObjects() {
 VkSurfaceFormatKHR StoneOceanSwapChain::chooseSwapSurfaceFormat(
     const std::vector<VkSurfaceFormatKHR> &availableFormats) {
   for (const auto &availableFormat : availableFormats) {
-    if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+    if (availableFormat.format == VK_FORMAT_B8G8R8_SRGB ||
         availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
       return availableFormat;
     }
   }
-
   return availableFormats[0];
 }
 
@@ -376,7 +391,7 @@ VkPresentModeKHR StoneOceanSwapChain::chooseSwapPresentMode(
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
   for (const auto &availablePresentMode : availablePresentModes) {
     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-      std::cout << "Present mode: Mailbox" << std::endl;
+      std::cout << "Present mode: Mailbox" << '\n';
       return availablePresentMode;
     }
   }
@@ -388,7 +403,7 @@ VkPresentModeKHR StoneOceanSwapChain::chooseSwapPresentMode(
   //   }
   // }
 
-  std::cout << "Present mode: V-Sync" << std::endl;
+  std::cout << "Present mode: V-Sync" << '\n';
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -408,11 +423,11 @@ VkExtent2D StoneOceanSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR 
   }
 }
 
-VkFormat StoneOceanSwapChain::findDepthFormat() {
-  return device.findSupportedFormat(
-      {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
-      VK_IMAGE_TILING_OPTIMAL,
-      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-}
+  VkFormat StoneOceanSwapChain::findDepthFormat() {
+    return device.findSupportedFormat(
+        {VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+  }
 
 }  // namespace lve

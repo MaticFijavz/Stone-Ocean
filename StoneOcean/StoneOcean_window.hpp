@@ -9,7 +9,7 @@ namespace  StoneOcean{
 
     class StoneOceanWindow{
     public:
-        StoneOceanWindow(uint32_t w, uint32_t h, std::string name);
+        StoneOceanWindow(int w, int h, std::string name);
         ~StoneOceanWindow();
      
         StoneOceanWindow(const StoneOceanWindow &) = delete;
@@ -17,15 +17,20 @@ namespace  StoneOcean{
           
         bool ShouldClose() {return glfwWindowShouldClose(window);}
         VkExtent2D getExtent() { return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)}; }
+        bool wasWindowResized() { return framebufferResized; }
+        void resetWindowResizedFlag() { framebufferResized = false; }
         
-        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface); 
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) const; 
 
      
     private:
+        
+        static void framebufferResizeCallBack(GLFWwindow *window, int width, int height);
         void initWindow();
      
-        const uint32_t width;
-        const uint32_t height;
+        int width;
+        int height;
+        bool framebufferResized = false;
      
         std::string windowName;
         GLFWwindow *window;
