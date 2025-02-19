@@ -97,7 +97,7 @@ namespace StoneOcean
         
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = configInfo.inputAssemblyInfo;
         inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; // Use point list topology
+        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // Use point list topology
         inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
         
         std::vector<VkDynamicState> dynamic_states = configInfo.dynamicStateEnables;

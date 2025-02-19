@@ -14,13 +14,13 @@
 namespace StoneOcean{
     class App{
     public:
-        static constexpr uint32_t WIDTH {1200};
+        static constexpr uint32_t WIDTH {1600};
         static constexpr uint32_t HEIGHT {900};
             
         App();    
         ~App();    
         
-        App(const StoneOceanWindow &) = delete;
+        App(const StoneOceanWindow &) = delete; 
         App &operator=(const StoneOceanWindow &) = delete;
         void run();
         
