@@ -21,11 +21,20 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stone_ocean_pipeline.cpp" />
     <ClCompile Include="stone_ocean_window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.hpp" />
+    <ClInclude Include="stone_ocean_pipeline.hpp" />
     <ClInclude Include="stone_ocean_window.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="shaders\complie.bat" />
+    <Content Include="shaders\frag_shader.frag" />
+    <Content Include="shaders\frag_shader.frag.spv" />
+    <Content Include="shaders\vert_shader.vert" />
+    <Content Include="shaders\vert_shader.vert.spv" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

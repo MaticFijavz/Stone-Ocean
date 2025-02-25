@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "stone_ocean_window.hpp"
+#include "stone_ocean_pipeline.hpp"
 
 namespace StoneOcean{
     class app{
@@ -10,8 +11,8 @@ namespace StoneOcean{
         
         void run();
     private:
-        StoneOceanWindow window{WIDTH, HEIGHT, "First App"};
-        
+        StoneOceanWindow window{WIDTH, HEIGHT, "SMV naloga DrHouse"};
+        StoneOceanPipeLine DrHouseicsPipeline{"shaders/vert_shader.vert.spv", "shaders/frag_shader.frag.spv"};     
     };
 
 
